@@ -9,6 +9,7 @@
 <body>
 
     <div class="container">
+<!--        <img src="{{ url_for('static', filename='external/Logo_UMB_Putih_besar.webp') }}" alt="Universitas Mercu Buana Logo" class="logo">-->
         <h1 class="text-center my-4">Tool Borrowing System</h1>
 
         <!-- Borrowing/Returning Form -->
@@ -35,11 +36,25 @@
                 <table class="table table-striped" id="transaction-table">
                     <thead>
                         <tr>
-                            <th>RFID</th>
+                            <th>No</th>
+                            <th>Name</th>
+                            <th>Card Number</th>
                             <th>Tool</th>
-                            <th>Borrow Date</th>
-                            <th>Return Date</th>
+                            <th>Borrow Date and Time</th>
+                            <th>Return Date and Time</th>
+                            <th>Session ID</th>
                         </tr>
+                    {% for transaction in transactions %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ transaction[1] }}</td>
+                            <td>{{ transaction[2] }}</td>
+                            <td>{{ transaction[3] }}</td>
+                            <td>{{ transaction[4] }}</td>
+                            <td>{{ transaction[5] }}</td>
+                            <td>{{ transaction[6] if transaction[6] else "Not returned yet" }}</td>
+                        </tr>
+                        {% endfor %}
                     </thead>
                     <tbody id="transaction-list">
                         <!-- Data will be injected here by JavaScript -->
@@ -51,50 +66,19 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <div class="footer">
+            <p>Projects By:</p>
+            <p>Natasya R</p>
+            <p>___________________</p>
+            <p>All rights reserved © 2024</p>
+    </div>
 
     <script>
-        // Handle form submission
-        $('#transaction-form').on('submit', function (e) {
-            e.preventDefault();
-            
-            const rfid = $('#rfid').val();
-            const tool = $('#tool').val();
-
-            $.ajax({
-                url: '/transaction',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    rfid: rfid,
-                    tool: tool
-                }),
-                success: function (response) {
-                    alert(response.message);
-                    loadTransactions();  // Refresh the table
-                }
-            });
-        });
-
-        // Load transactions into the table
-        function loadTransactions() {
-            $.getJSON('/transactions', function (data) {
-                let rows = '';
-                data.forEach(record => {
-                    rows += `<tr>
-                                <td>${record.rfid}</td>
-                                <td>${record.tool}</td>
-                                <td>${record.borrow_date}</td>
-                                <td>${record.return_date || 'Not returned'}</td>
-                            </tr>`;
-                });
-                $('#transaction-list').html(rows);
-            });
+        function refreshPage() {
+        location.reload();
         }
-
-        // Initial load of transactions when the page loads
-        $(document).ready(function() {
-            loadTransactions();
-        });
+        // Atur auto-refresh setiap 5 detik
+        setInterval(refreshPage, 5000);
     </script>
 </body>
 </html>
