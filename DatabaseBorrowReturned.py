@@ -36,6 +36,28 @@ def handle_transaction():
     conn.close()
     return jsonify(message=response)
 
+# API to retrieve all transactions
+@app.route('/transactions', methods=['GET'])
+def get_transactions():
+    conn = connect_db()
+    cursor = conn.cursor()
+    
+    # Get all transaction records
+    cursor.execute("SELECT rfid, tool, borrow_date, return_date FROM borrow_records")
+    records = cursor.fetchall()
+
+    # Format records for JSON response
+    result = []
+    for rfid, tool, borrow_date, return_date in records:
+        result.append({
+            'rfid': rfid,
+            'tool': tool,
+            'borrow_date': borrow_date,
+            'return_date': return_date
+        })
+    
+    conn.close()
+    return jsonify(result)
+
 if __name__ == '__main__':
     app.run(debug=True)
-
